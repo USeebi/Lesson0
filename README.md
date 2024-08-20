@@ -1,10 +1,11 @@
-# robot_mrobot
+# Lesson0
 
-This is a ROS package, which is used to learn about some operations of move robot.
+These are resources to join Lesson 0.
 
-- Learn to create and optimize a car model.
-- Learn to use rviz+ArbotiX to build a motion simulator.
-- Master the basic usage of ros_control (https://github.com/1027243334/ros_control).
-- Learn to use gazebo for simulation.
+- FreeCAD Addon in freecad.cross.zip for CROSS - ROS workbench
+- Sample CAD model MobileRobotAssembly_1.0.stp
 
-The tutorial with more details is located in xxx.
+- Repository of updated ROS packages from Chapter 6: ROS机器人开发实践 -- 胡春旭
+- Ready to launch catkin made ROS packages in catkin_ws.zip 
+
+- CAD information & data for simulation homework
