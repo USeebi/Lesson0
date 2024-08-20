@@ -2,9 +2,10 @@
 
 <robot name="mrobot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-	<xacro:include filename="$(find mrobot_gazebo)/urdf/mrobot_body.urdf.xacro" />
+	<xacro:include filename="$(find mrobot_gazebo)/urdf/mrobot_body.xacro" />
 
 	<!-- Body of mrobot, with plates, standoffs -->
-	<mrobot_body/>
+	<!-- https://blog.csdn.net/weixin_44420419/article/details/112236009 -->
+	<xacro:mrobot_body/>
 
 </robot>

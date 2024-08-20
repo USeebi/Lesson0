@@ -2,7 +2,11 @@
 # -*- coding: utf-8 -*-
 import rospy
 from geometry_msgs.msg import Twist
-import sys, select, termios, tty
+import sys, select, os
+if os.name == 'nt':
+  import msvcrt
+else:
+  import tty, termios
 
 msg = """
 Control mrobot!
@@ -42,14 +46,20 @@ speedBindings={
           }
 
 def getKey():
-    tty.setraw(sys.stdin.fileno())
-    rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
-    if rlist:
-        key = sys.stdin.read(1)
+    # https://stackoverflow.com/questions/15599565/how-do-you-use-msvcrt-getch-to-extract-and-use-input
+    # https://github.com/roomedia/turtle_teleop_multi_key/tree/melodic-devel/scripts
+    # to remove input buffer
+    if os.name == 'nt':
+        key = msvcrt.getch().decode('ASCII')
     else:
-        key = ''
+        tty.setraw(sys.stdin.fileno())
+        rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
+        if rlist:
+            key = sys.stdin.read(1)
+        else:
+            key = ''
 
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
 speed = .2
@@ -59,7 +69,8 @@ def vels(speed,turn):
     return "currently:\tspeed %s\tturn %s " % (speed,turn)
 
 if __name__=="__main__":
-    settings = termios.tcgetattr(sys.stdin)
+    if os.name != 'nt':
+        settings = termios.tcgetattr(sys.stdin)
     
     rospy.init_node('mrobot_teleop')
     pub = rospy.Publisher('/cmd_vel', Twist, queue_size=5)
@@ -74,8 +85,8 @@ if __name__=="__main__":
     control_speed = 0
     control_turn = 0
     try:
-        print msg
-        print vels(speed,turn)
+        print (msg)
+        print (vels(speed,turn))
         while(1):
             key = getKey()
             # 运动控制方向键（1：正方向，-1负方向）
@@ -89,9 +100,9 @@ if __name__=="__main__":
                 turn = turn * speedBindings[key][1]    # 角速度增加0.1倍
                 count = 0
 
-                print vels(speed,turn)
+                print (vels(speed,turn))
                 if (status == 14):
-                    print msg
+                    print (msg)
                 status = (status + 1) % 15
             # 停止键
             elif key == ' ' or key == 'k' :
@@ -137,7 +148,7 @@ if __name__=="__main__":
             pub.publish(twist)
 
     except:
-        print e
+        print (e)
 
     finally:
         twist = Twist()
@@ -145,4 +156,8 @@ if __name__=="__main__":
         twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
         pub.publish(twist)
 
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+    if os.name == 'nt':
+        pass
+
+    else:
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
